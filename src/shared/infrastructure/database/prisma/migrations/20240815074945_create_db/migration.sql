@@ -51,10 +51,13 @@ CREATE TABLE "record_sessions" (
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "auth0_id" TEXT NOT NULL,
+    "pinacle_id" TEXT,
+    "pinacle_status" BOOLEAN NOT NULL DEFAULT false,
+    "pinacle_date" TIMESTAMP(3),
     "name" TEXT NOT NULL,
     "email" TEXT,
     "document" VARCHAR(14),
-    "phones" TEXT[],
+    "phones" TEXT,
     "status" BOOLEAN NOT NULL DEFAULT false,
     "password" TEXT,
     "avatar" TEXT,
@@ -73,7 +76,7 @@ CREATE TABLE "stripe_subscription" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "customer_id" TEXT NOT NULL,
-    "subscription_id" TEXT NOT NULL,
+    "subscription_id" TEXT,
     "subscription_status" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -114,6 +117,9 @@ CREATE INDEX "record_sessions_user_id_idx" ON "record_sessions"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_auth0_id_key" ON "users"("auth0_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_pinacle_id_key" ON "users"("pinacle_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
