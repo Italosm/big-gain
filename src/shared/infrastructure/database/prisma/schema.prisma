@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRoles {
+  OWNER
+  ADMIN
+  USER
+  SAC
+  GUEST
+}
+
+enum Action {
+  LOGIN
+  LOGOUT
+}
+
+enum EntityType {
+  USER
+  USERTOKEN
+  STRIPESUBSCRIPTION
+}
+
+enum PaymentType {
+  PIX
+  CASH
+  CARD
+}
+
+model UserToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("users_tokens")
+}
+
+model Session {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      @unique
+  session_ip String
+  user       User     @relation(fields: [user_id], references: [id])
+  session_id String   @unique
+  action     Action   @default(LOGIN)
+  created_at DateTime @default(now())
+  expires_at DateTime
+
+  @@map("sessions")
+}
+
+model RecordSession {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  session_ip String
+  user       User     @relation(fields: [user_id], references: [id])
+  session_id String
+  action     Action   @default(LOGOUT)
+  created_at DateTime @default(now())
+  expired_in DateTime
+
+  @@index([user_id])
+  @@map("record_sessions")
+}
+
+model User {
+  id                  Int                 @id @default(autoincrement())
+  auth0_id            String              @unique
+  pinacle_id          String?             @unique
+  pinacle_status      Boolean             @default(false)
+  pinacle_date        DateTime?
+  name                String              @db.Text
+  email               String?             @unique @db.Text
+  document            String?             @unique @db.VarChar(14)
+  phones              String?             @db.Text
+  status              Boolean             @default(false)
+  password            String?             @db.Text
+  avatar              String?             @db.Text
+  roles               UserRoles[]         @default([USER])
+  birth_date          DateTime?           @db.Date
+  created_at          DateTime            @default(now())
+  updated_at          DateTime            @updatedAt
+  deleted_at          DateTime?           @db.Date
+  lgpd_excluded_at    DateTime?           @db.Date
+  user_tokens         UserToken[]
+  stripe_subscription StripeSubscription?
+  address             UserAddress[]
+  session             Session[]
+  RecordSession       RecordSession[]
+
+  @@map("users")
+}
+
+model StripeSubscription {
+  id                  Int       @id @default(autoincrement())
+  user_id             Int       @unique
+  user                User      @relation(fields: [user_id], references: [id])
+  customer_id         String    @unique
+  subscription_id     String?   @unique
+  subscription_status Boolean   @default(false)
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+  deleted_at          DateTime? @db.Date
+  lgpd_excluded_at    DateTime? @db.Date
+
+  @@index([subscription_status])
+  @@map("stripe_subscription")
+}
+
+model UserAddress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  address      String   @db.Text
+  cep          String   @db.Text
+  complement   String?  @db.Text
+  neighborhood String   @db.Text
+  number       String   @db.Text
+  city         String   @db.Text
+  state        String   @db.Text
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users_address")
+}

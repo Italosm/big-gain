@@ -1,0 +1,173 @@
+import { Router } from 'express';
+import {
+  auth0IdSchema,
+  createUserAddressSchema,
+  createUserSchema,
+  updateUserAddressSchema,
+  updateUserSchema,
+} from '../schemas/schemas';
+import { prismaService } from '../../database/prisma/prisma.service';
+import { ConflictError } from '@/shared/domain/conflict-error';
+import { createStripeCustomer } from '@/shared/utils/stripe';
+import { NotFoundError } from '@/shared/application/errors/not-found-error';
+
+const usersRoutes = Router();
+
+usersRoutes.get('/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+  const user = await prismaService.user.findUnique({
+    where: { auth0_id },
+  });
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
+  return res.json(user);
+});
+
+usersRoutes.post('/', async (req, res) => {
+  const validation = createUserSchema.parse(req.body);
+  const data = { ...validation };
+  const userExists = await prismaService.user.findUnique({
+    where: { auth0_id: data.auth0_id },
+  });
+  if (userExists) {
+    throw new ConflictError('User already exists');
+  }
+  const user = await prismaService.user.create({
+    data: {
+      auth0_id: data.auth0_id,
+      name: data.name,
+      email: data.email,
+      document: data.document,
+      phones: data.phones,
+      avatar: data.avatar,
+      pinacle_id: data.pinacle_id,
+      pinacle_status: data.pinacle_status,
+      pinacle_date: data.pinacle_date,
+      birth_date: data.birth_date,
+    },
+  });
+  const customer = await createStripeCustomer({
+    email: data.email,
+    name: data.document,
+  });
+  await prismaService.stripeSubscription.create({
+    data: {
+      user_id: user.id,
+      customer_id: customer.id,
+    },
+  });
+  return res.json(user);
+});
+
+usersRoutes.put('/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+  const validation = updateUserSchema.parse(req.body);
+  const data = { ...validation };
+  const user = await prismaService.user.findUnique({
+    where: { auth0_id },
+  });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
+  const updatedUser = await prismaService.user.update({
+    where: { auth0_id },
+    data: {
+      ...data,
+    },
+  });
+
+  return res.json(updatedUser);
+});
+
+usersRoutes.get('/address/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+  const user = await prismaService.user.findUnique({
+    where: { auth0_id },
+  });
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+  const address = await prismaService.userAddress.findFirst({
+    where: {
+      user_id: user.id,
+    },
+  });
+  if (!address) {
+    throw new NotFoundError('Address not found');
+  }
+  return res.json(address);
+});
+
+usersRoutes.post('/address/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+  const validation = createUserAddressSchema.parse(req.body);
+  const data = { ...validation };
+  const userExists = await prismaService.user.findUnique({
+    where: { auth0_id: auth0_id },
+  });
+  if (!userExists) {
+    throw new NotFoundError('User not Found');
+  }
+  const address = await prismaService.userAddress.create({
+    data: {
+      user_id: userExists.id,
+      address: data.address,
+      cep: data.cep,
+      complement: data.complement,
+      neighborhood: data.neighborhood,
+      number: data.number,
+      city: data.city,
+      state: data.state,
+    },
+  });
+  return res.json(address);
+});
+
+usersRoutes.put('/address/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+
+  const validation = updateUserAddressSchema.parse(req.body);
+  const data = { ...validation };
+
+  const userExists = await prismaService.user.findUnique({
+    where: { auth0_id },
+  });
+
+  if (!userExists) {
+    throw new NotFoundError('User not found');
+  }
+
+  const addressExists = await prismaService.userAddress.findFirst({
+    where: { user_id: userExists.id },
+  });
+
+  if (!addressExists) {
+    throw new NotFoundError('Address not found');
+  }
+
+  const updatedAddress = await prismaService.userAddress.update({
+    where: { id: addressExists.id },
+    data: {
+      address: data.address,
+      cep: data.cep,
+      complement: data.complement,
+      neighborhood: data.neighborhood,
+      number: data.number,
+      city: data.city,
+      state: data.state,
+    },
+  });
+
+  return res.json(updatedAddress);
+});
+
+export default usersRoutes;
