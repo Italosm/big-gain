@@ -2,8 +2,10 @@ import { Router } from 'express';
 import {
   auth0IdSchema,
   createUserAddressSchema,
+  createUserPinnacleSchema,
   createUserSchema,
   updateUserAddressSchema,
+  updateUserPinnacleSchema,
   updateUserSchema,
 } from '../schemas/schemas';
 import { prismaService } from '../../database/prisma/prisma.service';
@@ -43,9 +45,6 @@ usersRoutes.post('/', async (req, res) => {
       document: data.document,
       phones: data.phones,
       avatar: data.avatar,
-      pinacle_id: data.pinacle_id,
-      pinacle_status: data.pinacle_status,
-      pinacle_date: data.pinacle_date,
       birth_date: data.birth_date,
     },
   });
@@ -60,6 +59,49 @@ usersRoutes.post('/', async (req, res) => {
     },
   });
   return res.json(user);
+});
+
+usersRoutes.post('/pinnacle/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+  const validation = createUserPinnacleSchema.parse(req.body);
+  const data = { ...validation };
+  const userExists = await prismaService.user.findUnique({
+    where: { auth0_id: auth0_id },
+  });
+  if (!userExists) {
+    throw new NotFoundError('User not Found');
+  }
+  const pinnacleSubscription = await prismaService.pinnacleSubscription.create({
+    data: {
+      user_id: userExists.id,
+      pinnacle_id: data.pinnacle_id,
+      pinnacle_status: data.pinnacle_status,
+      pinnacle_date: data.pinnacle_date,
+      pinnacle_exp: data.pinnacle_exp,
+      comments: data.comments,
+    },
+  });
+  return res.json(pinnacleSubscription);
+});
+usersRoutes.put('/pinnacle/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+  const validation = updateUserPinnacleSchema.parse(req.body);
+  const data = { ...validation };
+  const userExists = await prismaService.user.findUnique({
+    where: { auth0_id: auth0_id },
+  });
+  if (!userExists) {
+    throw new NotFoundError('User not Found');
+  }
+  const pinnacleSubscription = await prismaService.pinnacleSubscription.update({
+    where: { user_id: userExists.id },
+    data: {
+      ...data,
+    },
+  });
+  return res.json(pinnacleSubscription);
 });
 
 usersRoutes.put('/:auth0_id', async (req, res) => {
@@ -157,13 +199,7 @@ usersRoutes.put('/address/:auth0_id', async (req, res) => {
   const updatedAddress = await prismaService.userAddress.update({
     where: { id: addressExists.id },
     data: {
-      address: data.address,
-      cep: data.cep,
-      complement: data.complement,
-      neighborhood: data.neighborhood,
-      number: data.number,
-      city: data.city,
-      state: data.state,
+      ...data,
     },
   });
 

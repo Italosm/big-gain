@@ -6,7 +6,7 @@
     "dev": "npx dotenv-cli -e .env.development -- tsx watch src/shared/infrastructure/http/server.ts",
     "prisma:generate": "npx dotenv-cli -e .env.development -- prisma generate --schema=src/shared/infrastructure/database/prisma/schema.prisma",
     "prisma:migrate": "npx dotenv-cli -e .env.development -- prisma migrate dev --schema=src/shared/infrastructure/database/prisma/schema.prisma",
-    "prisma:migrate-deploy": "npx dotenv-cli -e .env.development -- prisma migrate deploy --schema=src/shared/infrastructure/database/prisma/schema.prisma",
+    "prisma:migrate-deploy": "npx dotenv-cli -e .env -- prisma migrate deploy --schema=src/shared/infrastructure/database/prisma/schema.prisma",
     "prisma:studio": "prisma studio --schema=src/shared/infrastructure/database/prisma/schema.prisma",
     "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files",
     "start": "NODE_TLS_REJECT_UNAUTHORIZED=0 node dist/shared/infrastructure/http/server.js"

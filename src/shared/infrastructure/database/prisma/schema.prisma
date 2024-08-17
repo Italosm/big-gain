@@ -77,31 +77,40 @@ model RecordSession {
 }
 
 model User {
-  id                  Int                 @id @default(autoincrement())
-  auth0_id            String              @unique
-  pinacle_id          String?             @unique
-  pinacle_status      Boolean             @default(false)
-  pinacle_date        DateTime?
-  name                String              @db.Text
-  email               String?             @unique @db.Text
-  document            String?             @unique @db.VarChar(14)
-  phones              String?             @db.Text
-  status              Boolean             @default(false)
-  password            String?             @db.Text
-  avatar              String?             @db.Text
-  roles               UserRoles[]         @default([USER])
-  birth_date          DateTime?           @db.Date
-  created_at          DateTime            @default(now())
-  updated_at          DateTime            @updatedAt
-  deleted_at          DateTime?           @db.Date
-  lgpd_excluded_at    DateTime?           @db.Date
-  user_tokens         UserToken[]
-  stripe_subscription StripeSubscription?
-  address             UserAddress[]
-  session             Session[]
-  RecordSession       RecordSession[]
+  id                   Int                   @id @default(autoincrement())
+  auth0_id             String                @unique
+  name                 String                @db.Text
+  email                String?               @unique @db.Text
+  document             String?               @unique @db.VarChar(14)
+  phones               String?               @db.Text
+  status               Boolean               @default(false)
+  password             String?               @db.Text
+  avatar               String?               @db.Text
+  roles                UserRoles[]           @default([USER])
+  birth_date           DateTime?             @db.Date
+  created_at           DateTime              @default(now())
+  updated_at           DateTime              @updatedAt
+  deleted_at           DateTime?             @db.Date
+  lgpd_excluded_at     DateTime?             @db.Date
+  user_tokens          UserToken[]
+  stripe_subscription  StripeSubscription?
+  address              UserAddress[]
+  session              Session[]
+  RecordSession        RecordSession[]
+  PinnacleSubscription PinnacleSubscription?
 
   @@map("users")
+}
+
+model PinnacleSubscription {
+  id              Int       @id @default(autoincrement())
+  user_id         Int       @unique
+  user            User      @relation(fields: [user_id], references: [id])
+  pinnacle_id     String    @unique
+  pinnacle_status Boolean   @default(false)
+  pinnacle_date   DateTime
+  pinnacle_exp    DateTime?
+  comments        String?   @db.Text
 }
 
 model StripeSubscription {

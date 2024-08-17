@@ -2,9 +2,6 @@ import { z } from 'zod';
 
 export const createUserSchema = z.object({
   auth0_id: z.string(),
-  pinacle_id: z.string().optional(),
-  pinacle_status: z.coerce.boolean().default(false),
-  pinacle_date: z.coerce.date().optional(),
   status: z.coerce.boolean().default(true),
   name: z.string().min(3).optional(),
   email: z.string().email().optional(),
@@ -15,9 +12,6 @@ export const createUserSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
-  pinacle_id: z.string().optional(),
-  pinacle_status: z.coerce.boolean().optional(),
-  pinacle_date: z.coerce.date().optional(),
   status: z.coerce.boolean().optional(),
   name: z.string().min(3).optional(),
   email: z.string().email().optional(),
@@ -25,6 +19,21 @@ export const updateUserSchema = z.object({
   phones: z.string().optional(),
   avatar: z.string().url().optional(),
   birth_date: z.coerce.date().optional(),
+});
+
+export const createUserPinnacleSchema = z.object({
+  pinnacle_id: z.string(),
+  pinnacle_status: z.coerce.boolean().default(true),
+  pinnacle_date: z.coerce.date().optional(),
+  pinnacle_exp: z.coerce.date().optional(),
+  comments: z.string().optional(),
+});
+
+export const updateUserPinnacleSchema = z.object({
+  pinnacle_status: z.coerce.boolean().optional(),
+  pinnacle_date: z.coerce.date().optional(),
+  pinnacle_exp: z.coerce.date().optional(),
+  comments: z.string().optional(),
 });
 
 export const createUserAddressSchema = z.object({

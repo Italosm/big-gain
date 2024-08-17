@@ -1,28 +1,13 @@
 /* eslint-disable no-console */
 import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
-// import jwt from 'jsonwebtoken';
 import routes from './routes';
 import DomainError from '@/shared/errors/domain-error';
 import { NotFoundError } from '@/shared/application/errors/not-found-error';
 import ApplicationError from '@/shared/errors/application-error';
 import { ZodError } from 'zod';
-// import { auth } from 'express-openid-connect';
-// import { prismaService } from '../database/prisma/prisma.service';
-// import { env } from '../env-config/env';
-// import ensureSingleSession from './middlewares/ensureSingleSession';
-// import cors from 'cors';
 
 const app = express();
-
-// app.use(
-//   cors({
-//     origin: ['*'],
-//     methods: ['GET', 'POST'],
-//     allowedHeaders: ['Content-Type', 'Authorization'],
-//     credentials: true,
-//   }),
-// );
 
 app.use(express.json());
 
