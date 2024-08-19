@@ -111,6 +111,8 @@ model PinnacleSubscription {
   pinnacle_date   DateTime
   pinnacle_exp    DateTime?
   comments        String?   @db.Text
+
+  @@map("pinnacle_subscription")
 }
 
 model StripeSubscription {

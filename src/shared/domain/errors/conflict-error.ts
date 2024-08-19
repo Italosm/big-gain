@@ -1,4 +1,4 @@
-import DomainError from '../errors/domain-error';
+import DomainError from '../../errors/domain-error';
 
 export class ConflictError extends DomainError {
   constructor(public message: string) {
