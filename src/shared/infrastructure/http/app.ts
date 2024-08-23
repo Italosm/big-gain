@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 app.use(routes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  next(new NotFoundError(`Cannot find ${req.originalUrl} on this server`));
+  next(new NotFoundError(`Cannot find url: ${req.originalUrl} on this server`));
 });
 
 app.use(

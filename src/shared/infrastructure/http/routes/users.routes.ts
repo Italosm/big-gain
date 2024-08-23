@@ -19,7 +19,7 @@ usersRoutes.get('/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
   auth0IdSchema.parse(auth0_id);
   const user = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
     include: {
       PinnacleSubscription: true,
     },
@@ -35,14 +35,14 @@ usersRoutes.post('/', async (req, res) => {
   const validation = createUserSchema.parse(req.body);
   const data = { ...validation };
   const userExists = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(data.auth0_id) },
+    where: { auth0_id: data.auth0_id },
   });
   if (userExists) {
     throw new ConflictError('User already exists');
   }
   const user = await prismaService.user.create({
     data: {
-      auth0_id: decodeURI(data.auth0_id),
+      auth0_id: data.auth0_id,
       name: data.name,
       email: data.email,
       document: data.document,
@@ -70,10 +70,17 @@ usersRoutes.post('/pinnacle/:auth0_id', async (req, res) => {
   const validation = createUserPinnacleSchema.parse(req.body);
   const data = { ...validation };
   const userExists = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
   });
   if (!userExists) {
     throw new NotFoundError('User not Found');
+  }
+  const pinnacleSubscriptionExists =
+    await prismaService.pinnacleSubscription.findUnique({
+      where: { pinnacle_id: data.pinnacle_id },
+    });
+  if (pinnacleSubscriptionExists) {
+    throw new ConflictError('Pinnacle id already exists');
   }
   const pinnacleSubscription = await prismaService.pinnacleSubscription.create({
     data: {
@@ -94,7 +101,7 @@ usersRoutes.put('/pinnacle/:auth0_id', async (req, res) => {
   const validation = updateUserPinnacleSchema.parse(req.body);
   const data = { ...validation };
   const userExists = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
   });
   if (!userExists) {
     throw new NotFoundError('User not Found');
@@ -114,7 +121,7 @@ usersRoutes.put('/:auth0_id', async (req, res) => {
   const validation = updateUserSchema.parse(req.body);
   const data = { ...validation };
   const user = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
   });
 
   if (!user) {
@@ -122,7 +129,7 @@ usersRoutes.put('/:auth0_id', async (req, res) => {
   }
 
   const updatedUser = await prismaService.user.update({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
     data: {
       ...data,
     },
@@ -135,7 +142,7 @@ usersRoutes.get('/address/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
   auth0IdSchema.parse(auth0_id);
   const user = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
   });
   if (!user) {
     throw new NotFoundError('User not found');
@@ -157,7 +164,7 @@ usersRoutes.post('/address/:auth0_id', async (req, res) => {
   const validation = createUserAddressSchema.parse(req.body);
   const data = { ...validation };
   const userExists = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
   });
   if (!userExists) {
     throw new NotFoundError('User not Found');
@@ -185,7 +192,7 @@ usersRoutes.put('/address/:auth0_id', async (req, res) => {
   const data = { ...validation };
 
   const userExists = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
   });
 
   if (!userExists) {
@@ -214,7 +221,7 @@ usersRoutes.get('/pinnacle/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
   auth0IdSchema.parse(auth0_id);
   const user = await prismaService.user.findUnique({
-    where: { auth0_id: decodeURI(auth0_id) },
+    where: { auth0_id },
   });
   if (!user) {
     throw new NotFoundError('User not found');
