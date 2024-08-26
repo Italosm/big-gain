@@ -12,6 +12,7 @@ import { prismaService } from '../../database/prisma/prisma.service';
 import { ConflictError } from '@/shared/domain/errors/conflict-error';
 import { createStripeCustomer } from '@/shared/utils/stripe';
 import { NotFoundError } from '@/shared/application/errors/not-found-error';
+import ensureSingleSession from '../middlewares/ensureSingleSession';
 
 const usersRoutes = Router();
 
@@ -237,5 +238,38 @@ usersRoutes.get('/pinnacle/:auth0_id', async (req, res) => {
   }
   return res.json(pinnacleSubscriprion);
 });
+
+usersRoutes.delete(
+  '/sessions/:auth0_id',
+  ensureSingleSession,
+  async (req, res) => {
+    const { auth0_id } = req.params;
+    auth0IdSchema.parse(auth0_id);
+    const user = await prismaService.user.findUnique({
+      where: { auth0_id },
+    });
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    const sessionExists = await prismaService.session.findUnique({
+      where: { user_id: user.id },
+    });
+    if (!sessionExists) {
+      throw new NotFoundError('Session not found');
+    }
+    await prismaService.recordSession.create({
+      data: {
+        user_id: user.id,
+        session_ip: sessionExists.session_ip,
+        session_id: sessionExists.session_id,
+        action: 'LOGOUT',
+        expired_in: sessionExists.expires_at,
+      },
+    });
+    res.status(200).json({
+      message: 'Session deleted successfully',
+    });
+  },
+);
 
 export default usersRoutes;

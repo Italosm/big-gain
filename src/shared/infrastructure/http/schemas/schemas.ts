@@ -63,4 +63,8 @@ export const createUserStripeSchema = z.object({
   subscription_status: z.coerce.boolean().default(false),
 });
 
+export const createSessionSchema = z.object({
+  idToken: z.string(),
+});
+
 export const auth0IdSchema = z.string();
