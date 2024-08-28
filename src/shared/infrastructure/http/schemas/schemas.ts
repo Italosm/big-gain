@@ -64,7 +64,7 @@ export const createUserStripeSchema = z.object({
 });
 
 export const createSessionSchema = z.object({
-  idToken: z.string(),
+  accessToken: z.string(),
 });
 
 export const auth0IdSchema = z.string();

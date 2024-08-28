@@ -266,10 +266,17 @@ usersRoutes.delete(
         expired_in: sessionExists.expires_at,
       },
     });
+    await prismaService.session.delete({
+      where: { user_id: user.id },
+    });
     res.status(200).json({
       message: 'Session deleted successfully',
     });
   },
 );
+
+usersRoutes.get('/test-session', ensureSingleSession, async (req, res) => {
+  res.status(200).json({ message: 'Session is valid and unique' });
+});
 
 export default usersRoutes;

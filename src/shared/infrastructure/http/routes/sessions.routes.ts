@@ -25,9 +25,9 @@ sessionsRoutes.post('/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
   auth0IdSchema.parse(auth0_id);
   const ip = req.ip;
-  const { idToken } = req.body;
-  createSessionSchema.parse(idToken);
-  const decodedToken = jwt.decode(idToken) as jwt.JwtPayload;
+  const { accessToken } = req.body;
+  createSessionSchema.parse(accessToken);
+  const decodedToken = jwt.decode(accessToken) as jwt.JwtPayload;
   const expiresAt = decodedToken?.exp
     ? new Date(decodedToken.exp * 1000)
     : new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -51,12 +51,15 @@ sessionsRoutes.post('/:auth0_id', async (req, res) => {
         expired_in: sessionExists.expires_at,
       },
     });
+    await prismaService.session.delete({
+      where: { user_id: user.id },
+    });
   }
   await prismaService.session.create({
     data: {
       user_id: user.id,
       session_ip: ip,
-      session_id: idToken,
+      session_id: accessToken,
       action: 'LOGIN',
       expires_at: expiresAt,
     },

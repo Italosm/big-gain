@@ -43,5 +43,9 @@ export default async function ensureSingleSession(
   if (session.session_id != token) {
     throw new InvalidCredentialsError('Invalid Credentials');
   }
+
+  if (decodedToken.exp && decodedToken.exp < Date.now() / 1000) {
+    throw new InvalidCredentialsError('JWT Token has expired.');
+  }
   return next();
 }
