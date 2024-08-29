@@ -3,22 +3,11 @@ import { auth0IdSchema, createSessionSchema } from '../schemas/schemas';
 import { prismaService } from '../../database/prisma/prisma.service';
 import { NotFoundError } from '@/shared/application/errors/not-found-error';
 import jwt from 'jsonwebtoken';
+import ensureSingleSession from '../middlewares/ensureSingleSession';
 const sessionsRoutes = Router();
 
-sessionsRoutes.get('/:auth0_id', async (req, res) => {
-  const { auth0_id } = req.params;
-  auth0IdSchema.parse(auth0_id);
-  const user = await prismaService.user.findUnique({
-    where: { auth0_id },
-    include: {
-      PinnacleSubscription: true,
-    },
-  });
-  if (!user) {
-    throw new NotFoundError('User not found');
-  }
-
-  return res.json(user);
+sessionsRoutes.get('/', ensureSingleSession, async (req, res) => {
+  return res.status(200).json({ message: 'ok' });
 });
 
 sessionsRoutes.post('/:auth0_id', async (req, res) => {

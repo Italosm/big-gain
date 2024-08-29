@@ -16,6 +16,10 @@ import ensureSingleSession from '../middlewares/ensureSingleSession';
 
 const usersRoutes = Router();
 
+usersRoutes.get('/test-session', ensureSingleSession, async (req, res) => {
+  res.status(200).json({ message: 'Session is valid and unique' });
+});
+
 usersRoutes.get('/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
   auth0IdSchema.parse(auth0_id);
@@ -274,9 +278,5 @@ usersRoutes.delete(
     });
   },
 );
-
-usersRoutes.get('/test-session', ensureSingleSession, async (req, res) => {
-  res.status(200).json({ message: 'Session is valid and unique' });
-});
 
 export default usersRoutes;
