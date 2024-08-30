@@ -6,6 +6,7 @@ import DomainError from '@/shared/errors/domain-error';
 import { NotFoundError } from '@/shared/application/errors/not-found-error';
 import ApplicationError from '@/shared/errors/application-error';
 import { ZodError } from 'zod';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 const app = express();
 
@@ -37,6 +38,16 @@ app.use(
       });
     }
     console.log(error);
+
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        return response.status(409).json({
+          status: 'error',
+          message: 'Unique constraint failed',
+          meta: error.meta,
+        });
+      }
+    }
     return response.status(500).json({
       status: 'error',
       message: 'Internal server error',

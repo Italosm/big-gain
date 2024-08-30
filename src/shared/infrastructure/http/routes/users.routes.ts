@@ -45,6 +45,24 @@ usersRoutes.post('/', async (req, res) => {
   if (userExists) {
     throw new ConflictError('User already exists');
   }
+
+  const documentExists = await prismaService.user.findUnique({
+    where: { document: data.document },
+  });
+
+  if (documentExists) {
+    throw new ConflictError('Document already exists');
+  }
+
+  if (data.email) {
+    const emailExists = await prismaService.user.findUnique({
+      where: { document: data.email },
+    });
+
+    if (emailExists) {
+      throw new ConflictError('Email already exists');
+    }
+  }
   const user = await prismaService.user.create({
     data: {
       auth0_id: data.auth0_id,
