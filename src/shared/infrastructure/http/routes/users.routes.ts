@@ -38,11 +38,28 @@ usersRoutes.get('/:auth0_id', async (req, res) => {
 });
 
 usersRoutes.get('/', async (req, res) => {
-  const { limit, page, sortBy, order, pinnacle_status } = listUsersSchema.parse(
-    req.query,
-  );
+  const { limit, page, sortBy, order, pinnacle_status, has_pinnacle } =
+    listUsersSchema.parse(req.query);
 
   const offset = (page - 1) * limit;
+
+  const whereClause: any = {};
+
+  if (pinnacle_status !== undefined) {
+    whereClause.PinnacleSubscription = {
+      pinnacle_status,
+    };
+  }
+
+  if (has_pinnacle) {
+    whereClause.PinnacleSubscription = {
+      isNot: null,
+    };
+  }
+
+  const totalUsers = await prismaService.user.count({
+    where: whereClause,
+  });
 
   const users = await prismaService.user.findMany({
     skip: offset,
@@ -53,21 +70,18 @@ usersRoutes.get('/', async (req, res) => {
     include: {
       PinnacleSubscription: true,
     },
-    where:
-      pinnacle_status !== undefined
-        ? {
-            PinnacleSubscription: {
-              pinnacle_status,
-            },
-          }
-        : {},
+    where: whereClause,
   });
+
+  const totalPages = Math.ceil(totalUsers / limit);
 
   return res.json({
     data: users,
     pagination: {
       page,
       limit,
+      totalPages,
+      totalUsers,
     },
   });
 });

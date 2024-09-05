@@ -18,6 +18,12 @@ export const listUsersSchema = z.object({
   order: z.enum(['asc', 'desc']).default('desc'),
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(10),
+  has_pinnacle: z
+    .string()
+    .transform(val =>
+      val === 'true' || val === 'false' ? val === 'true' : undefined,
+    )
+    .optional(),
   pinnacle_status: z
     .string()
     .transform(val =>
