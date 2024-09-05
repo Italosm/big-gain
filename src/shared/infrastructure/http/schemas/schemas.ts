@@ -11,6 +11,21 @@ export const createUserSchema = z.object({
   birth_date: z.coerce.date(),
 });
 
+export const listUsersSchema = z.object({
+  sortBy: z
+    .enum(['name', 'email', 'document', 'birth_date', 'created_at'])
+    .default('created_at'),
+  order: z.enum(['asc', 'desc']).default('desc'),
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+  pinnacle_status: z
+    .string()
+    .transform(val =>
+      val === 'true' || val === 'false' ? val === 'true' : undefined,
+    )
+    .optional(),
+});
+
 export const updateUserSchema = z.object({
   status: z.coerce.boolean().optional(),
   name: z.string().min(3).optional(),
@@ -23,13 +38,14 @@ export const updateUserSchema = z.object({
 
 export const createUserPinnacleSchema = z.object({
   pinnacle_id: z.string(),
-  pinnacle_status: z.coerce.boolean().default(true),
+  pinnacle_status: z.coerce.boolean().default(false),
   pinnacle_date: z.coerce.date().optional(),
   pinnacle_exp: z.coerce.date().optional(),
   comments: z.string().optional(),
 });
 
 export const updateUserPinnacleSchema = z.object({
+  pinnacle_id: z.string().optional(),
   pinnacle_status: z.coerce.boolean().optional(),
   pinnacle_date: z.coerce.date().optional(),
   pinnacle_exp: z.coerce.date().optional(),

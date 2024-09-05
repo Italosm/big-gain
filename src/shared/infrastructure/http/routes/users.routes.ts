@@ -4,6 +4,7 @@ import {
   createUserAddressSchema,
   createUserPinnacleSchema,
   createUserSchema,
+  listUsersSchema,
   updateUserAddressSchema,
   updateUserPinnacleSchema,
   updateUserSchema,
@@ -34,6 +35,41 @@ usersRoutes.get('/:auth0_id', async (req, res) => {
   }
 
   return res.json(user);
+});
+
+usersRoutes.get('/', async (req, res) => {
+  const { limit, page, sortBy, order, pinnacle_status } = listUsersSchema.parse(
+    req.query,
+  );
+
+  const offset = (page - 1) * limit;
+
+  const users = await prismaService.user.findMany({
+    skip: offset,
+    take: limit,
+    orderBy: {
+      [sortBy]: order,
+    },
+    include: {
+      PinnacleSubscription: true,
+    },
+    where:
+      pinnacle_status !== undefined
+        ? {
+            PinnacleSubscription: {
+              pinnacle_status,
+            },
+          }
+        : {},
+  });
+
+  return res.json({
+    data: users,
+    pagination: {
+      page,
+      limit,
+    },
+  });
 });
 
 usersRoutes.post('/', async (req, res) => {
