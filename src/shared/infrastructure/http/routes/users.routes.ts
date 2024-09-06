@@ -179,8 +179,17 @@ usersRoutes.put('/pinnacle/:auth0_id', async (req, res) => {
   if (!userExists) {
     throw new NotFoundError('User not Found');
   }
+  const user_id = userExists.id;
+  const pinnacleSubscriptionExists =
+    prismaService.pinnacleSubscription.findUnique({
+      where: { user_id },
+    });
+
+  if (!pinnacleSubscriptionExists) {
+    throw new NotFoundError('Pinnacle subscription not Found');
+  }
   const pinnacleSubscription = await prismaService.pinnacleSubscription.update({
-    where: { user_id: userExists.id },
+    where: { user_id },
     data: {
       ...data,
     },

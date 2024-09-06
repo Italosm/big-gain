@@ -23,13 +23,15 @@ export const listUsersSchema = z.object({
     .transform(val =>
       val === 'true' || val === 'false' ? val === 'true' : undefined,
     )
-    .optional(),
+    .optional()
+    .default(undefined),
   pinnacle_status: z
     .string()
     .transform(val =>
       val === 'true' || val === 'false' ? val === 'true' : undefined,
     )
-    .optional(),
+    .optional()
+    .default(undefined),
 });
 
 export const updateUserSchema = z.object({
