@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import express, { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, raw, Request, Response } from 'express';
 import 'express-async-errors';
 import routes from './routes';
 import DomainError from '@/shared/errors/domain-error';
@@ -7,9 +7,11 @@ import { NotFoundError } from '@/shared/application/errors/not-found-error';
 import ApplicationError from '@/shared/errors/application-error';
 import { ZodError } from 'zod';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import stripeWebHookRouter from './routes/stripe-webhook.routes';
 
 const app = express();
 
+app.use('/billing', raw({ type: 'application/json' }), stripeWebHookRouter);
 app.use(express.json());
 
 app.get('/', (req, res) => {
