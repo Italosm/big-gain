@@ -4,7 +4,6 @@ import { NotFoundError } from '../application/errors/not-found-error';
 import { BadRequestError } from '../application/errors/bad-request-error';
 
 class CancelPlanService {
-  
   public async execute(event: { data: { object: Stripe.Subscription } }) {
     const customer_id = event.data.object.customer as string;
 
@@ -12,9 +11,10 @@ class CancelPlanService {
       throw new BadRequestError('Customer ID is required.');
     }
 
-    const subscriptionExists = await prismaService.stripeSubscription.findUnique({
-      where: { customer_id },
-    });
+    const subscriptionExists =
+      await prismaService.stripeSubscription.findUnique({
+        where: { customer_id },
+      });
 
     if (!subscriptionExists) {
       throw new NotFoundError('User not found.');

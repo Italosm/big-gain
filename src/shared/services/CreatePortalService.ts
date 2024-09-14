@@ -4,12 +4,11 @@ import { createPortalCustomer } from '../utils/stripe';
 import Stripe from 'stripe';
 
 class CreatePortalService {
-  
   public async execute({
     auth0_id,
-  }: { auth0_id: string }): Promise<Stripe.Response<Stripe.BillingPortal.Session>> {
-    
-    
+  }: {
+    auth0_id: string;
+  }): Promise<Stripe.Response<Stripe.BillingPortal.Session>> {
     const userExists = await prismaService.user.findUnique({
       where: { auth0_id },
     });
@@ -18,9 +17,10 @@ class CreatePortalService {
       throw new NotFoundError('User not found.');
     }
 
-    const subscriptionExists = await prismaService.stripeSubscription.findUnique({
-      where: {user_id: userExists.id}
-    })
+    const subscriptionExists =
+      await prismaService.stripeSubscription.findUnique({
+        where: { user_id: userExists.id },
+      });
 
     if (!subscriptionExists) {
       throw new NotFoundError('Subscription not found.');
@@ -31,7 +31,6 @@ class CreatePortalService {
       throw new NotFoundError('Stripe Customer ID not found for this clinic.');
     }
 
-    
     const portal = await createPortalCustomer(stripeCustomerId);
 
     return portal;

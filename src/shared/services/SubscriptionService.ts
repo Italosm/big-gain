@@ -3,7 +3,6 @@ import ApplicationError from '../errors/application-error';
 import { prismaService } from '../infrastructure/database/prisma/prisma.service';
 
 class SubscriptionService {
-  
   public async execute(event: { data: { object: Stripe.Subscription } }) {
     const subscription_status = event.data.object.status;
     const customer_id = event.data.object.customer as string;
@@ -14,9 +13,10 @@ class SubscriptionService {
       );
     }
 
-    const stripeSubscriptionExists = await prismaService.stripeSubscription.findUnique({
-      where: {  customer_id },
-    });
+    const stripeSubscriptionExists =
+      await prismaService.stripeSubscription.findUnique({
+        where: { customer_id },
+      });
 
     if (!stripeSubscriptionExists) {
       throw new ApplicationError('Stripe Subscription not found.');

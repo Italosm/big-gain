@@ -28,7 +28,7 @@ usersRoutes.get('/:auth0_id', async (req, res) => {
     where: { auth0_id },
     include: {
       PinnacleSubscription: true,
-      stripe_subscription: true
+      stripe_subscription: true,
     },
   });
   if (!user) {

@@ -7,6 +7,6 @@ const routes = Router();
 
 routes.use('/sessions', sessionsRoutes);
 routes.use('/users', usersRoutes);
-routes.use('/checkout', usersCheckoutRouter)
+routes.use('/checkout', usersCheckoutRouter);
 
 export default routes;

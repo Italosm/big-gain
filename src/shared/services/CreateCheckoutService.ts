@@ -8,13 +8,13 @@ interface CheckoutResponse {
 }
 
 class CreateCheckoutService {
-  
   public async execute({
     auth0_id,
     price,
-  }: { auth0_id: string; price: string }): Promise<CheckoutResponse | undefined> {
-    
-    
+  }: {
+    auth0_id: string;
+    price: string;
+  }): Promise<CheckoutResponse | undefined> {
     const userExists = await prismaService.user.findUnique({
       where: { auth0_id },
     });
@@ -29,10 +29,9 @@ class CreateCheckoutService {
 
     const email = userExists.email;
     const name = userExists.document;
-    
-    
+
     const checkout = await generateCheckout(name, email, price);
-    
+
     return checkout;
   }
 }

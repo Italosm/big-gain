@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import { env } from '../infrastructure/env-config/env';
 
-export const stripe = new Stripe(env.STRIPE_SECRET , {
+export const stripe = new Stripe(env.STRIPE_SECRET, {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
@@ -38,8 +38,8 @@ export const generateCheckout = async (
       mode: 'subscription',
       client_reference_id: name,
       customer: customer.id,
-      success_url: `https://localhost:3333/checkout?status=sucesso`,
-      cancel_url: `https://localhost:3333/checkout?status=error`,
+      success_url: `https://arbmachine.io/api/checkout?status=sucesso`,
+      cancel_url: `https://arbmachine.io/api/checkout?status=error`,
       line_items: [
         {
           price: price,
@@ -66,7 +66,7 @@ export const handleCancelSubscription = async (idSubscriptions: string) => {
 export const createPortalCustomer = async (idCustomer: string) => {
   const subscription = await stripe.billingPortal.sessions.create({
     customer: idCustomer,
-    return_url: 'https://localhost:3333/checkout?status=sucesso',
+    return_url: 'https://arbmachine.io/api/checkout?status=sucesso',
   });
 
   return subscription;

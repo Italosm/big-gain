@@ -7,7 +7,6 @@ import { stripe } from '@/shared/utils/stripe';
 import { Request, Response } from 'express';
 import { auth0IdSchema } from '../schemas/schemas';
 
-
 class CheckoutController {
   public async show(request: Request, response: Response): Promise<Response> {
     const { auth0_id } = request.params;
@@ -52,19 +51,18 @@ class CheckoutController {
       response.status(400).send(err);
       return;
     }
-    
+    const checkoutSession = new CheckoutSessionService();
+    const subscriptionService = new SubscriptionService();
+    const cancelPlan = new CancelPlanService();
     switch (event.type) {
       case 'checkout.session.completed':
-        const checkoutSession = new CheckoutSessionService();
         await checkoutSession.execute(event);
         break;
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
-        const subscriptionService = new SubscriptionService()
         await subscriptionService.execute(event);
         break;
       case 'customer.subscription.deleted':
-        const cancelPlan = new CancelPlanService();
         await cancelPlan.execute(event);
         break;
       default:
