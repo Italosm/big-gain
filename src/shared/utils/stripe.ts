@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
+import { env } from '../infrastructure/env-config/env';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET as string, {
+export const stripe = new Stripe(env.STRIPE_SECRET , {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
