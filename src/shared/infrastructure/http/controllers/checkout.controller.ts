@@ -6,6 +6,7 @@ import SubscriptionService from '@/shared/services/SubscriptionService';
 import { stripe } from '@/shared/utils/stripe';
 import { Request, Response } from 'express';
 import { auth0IdSchema } from '../schemas/schemas';
+import UpcomingInvoiceService from '@/shared/services/UpcomingInvoiceService';
 
 class CheckoutController {
   public async show(request: Request, response: Response): Promise<Response> {
@@ -54,6 +55,7 @@ class CheckoutController {
     const checkoutSession = new CheckoutSessionService();
     const subscriptionService = new SubscriptionService();
     const cancelPlan = new CancelPlanService();
+    const upcomingInvoice = new UpcomingInvoiceService();
     switch (event.type) {
       case 'checkout.session.completed':
         await checkoutSession.execute(event);
@@ -61,6 +63,9 @@ class CheckoutController {
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
         await subscriptionService.execute(event);
+        break;
+      case 'invoice.upcoming':
+        await upcomingInvoice.execute(event.data.object);
         break;
       case 'customer.subscription.deleted':
         await cancelPlan.execute(event);
