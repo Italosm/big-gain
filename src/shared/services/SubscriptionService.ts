@@ -7,7 +7,13 @@ class SubscriptionService {
     const subscription_status = event.data.object.status;
     const customer_id = event.data.object.customer as string;
     const subscription_id = event.data.object.id as string;
-    if (!customer_id || !subscription_id || !subscription_status) {
+    const current_period_end = event.data.object.current_period_end;
+    if (
+      !customer_id ||
+      !subscription_id ||
+      !subscription_status ||
+      !current_period_end
+    ) {
       throw new ApplicationError(
         'customer_id, subscription_id, and subscription_status are required.',
       );
@@ -28,6 +34,7 @@ class SubscriptionService {
         customer_id,
         subscription_id,
         subscription_status,
+        current_period_end: new Date(current_period_end * 1000),
       },
     });
 
