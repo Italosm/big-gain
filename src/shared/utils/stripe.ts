@@ -1,6 +1,5 @@
 import Stripe from 'stripe';
 import { env } from '../infrastructure/env-config/env';
-import { NotFoundError } from '../application/errors/not-found-error';
 
 export const stripe = new Stripe(env.STRIPE_SECRET, {
   httpClient: Stripe.createFetchHttpClient(),
@@ -24,31 +23,12 @@ export const createStripeCustomer = async (data: {
   });
 };
 
-export const checkIfPriceExists = async (priceId: string) => {
-  try {
-    const prices = await stripe.prices.list({
-      limit: 1,
-      lookup_keys: [priceId],
-      active: true,
-    });
-
-    return prices.data.length > 0;
-  } catch (error) {
-    console.error('Erro ao verificar o preço no Stripe:', error);
-    return false;
-  }
-};
-
 export const generateCheckout = async (
   name: string,
   email: string,
   price: string,
 ) => {
   try {
-    const priceExists = await checkIfPriceExists(price);
-    if (!priceExists) {
-      throw new NotFoundError(`O preço ${price} não existe no Stripe.`);
-    }
     const customer = await createStripeCustomer({
       email,
       name,
