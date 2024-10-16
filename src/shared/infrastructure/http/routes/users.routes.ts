@@ -38,6 +38,26 @@ usersRoutes.get('/:auth0_id', async (req, res) => {
   return res.json(user);
 });
 
+usersRoutes.get('/v2/:pinnacle_id', async (req, res) => {
+  const { pinnacle_id } = req.params;
+  const pinnacleUser = await prismaService.pinnacleSubscription.findUnique({
+    where: { pinnacle_id },
+  });
+  const id = pinnacleUser.user_id;
+  const user = await prismaService.user.findUnique({
+    where: { id },
+    include: {
+      PinnacleSubscription: true,
+      stripe_subscription: true,
+    },
+  });
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
+  return res.json(user);
+});
+
 usersRoutes.get('/', async (req, res) => {
   const { limit, page, sortBy, order, pinnacle_status, has_pinnacle } =
     listUsersSchema.parse(req.query);
@@ -168,6 +188,7 @@ usersRoutes.post('/pinnacle/:auth0_id', async (req, res) => {
   });
   return res.json(pinnacleSubscription);
 });
+
 usersRoutes.put('/pinnacle/:auth0_id', async (req, res) => {
   const { auth0_id } = req.params;
   auth0IdSchema.parse(auth0_id);
