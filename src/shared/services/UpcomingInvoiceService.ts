@@ -1,31 +1,22 @@
 import Stripe from 'stripe';
 import ApplicationError from '../errors/application-error';
-import { stripe } from '../utils/stripe';
 
 class UpcomingInvoiceService {
   public async execute(invoice: Stripe.Invoice) {
     const customer_id = invoice.customer as string;
     const subscription_id = invoice.subscription as string;
+    const invoice_id = invoice.id as string;
 
-    if (!customer_id || !subscription_id) {
+    if (!customer_id || !subscription_id || !invoice_id) {
       throw new ApplicationError(
-        'Customer ID and Subscription ID are required.',
+        'Customer ID and Subscription ID and Invoice ID are required.',
       );
     }
 
-    try {
-      const finalizedInvoice = await stripe.invoices.finalizeInvoice(
-        invoice.id,
-      );
-
-      console.log(
-        `Invoice finalized for customer ${customer_id} and subscription ${subscription_id}`,
-      );
-      return finalizedInvoice;
-    } catch (error) {
-      console.error(`Failed to finalize invoice: ${error.message}`);
-      throw new ApplicationError('Failed to finalize invoice.');
-    }
+    console.log(
+      `Invoice is upcoming for customer ${customer_id} and subscription ${subscription_id}. Invoice ID: ${invoice_id}`,
+    );
+    return;
   }
 }
 

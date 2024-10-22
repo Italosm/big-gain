@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Stripe from 'stripe';
 import { env } from '../infrastructure/env-config/env';
 
@@ -27,12 +28,16 @@ export const generateCheckout = async (
   name: string,
   email: string,
   price: string,
+  coupon?: string,
 ) => {
   try {
     const customer = await createStripeCustomer({
       email,
       name,
     });
+
+    const discounts = coupon ? [{ coupon }] : undefined;
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
@@ -46,6 +51,10 @@ export const generateCheckout = async (
           quantity: 1,
         },
       ],
+      subscription_data: {
+        trial_period_days: 1,
+      },
+      discounts: discounts,
     });
     return {
       url: session.url,
@@ -66,7 +75,7 @@ export const handleCancelSubscription = async (idSubscriptions: string) => {
 export const createPortalCustomer = async (idCustomer: string) => {
   const subscription = await stripe.billingPortal.sessions.create({
     customer: idCustomer,
-    return_url: 'https://arbmachine.io/api/checkout?status=sucesso',
+    return_url: 'https://arbmachine.io/usuario',
   });
 
   return subscription;

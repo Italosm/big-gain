@@ -84,7 +84,7 @@ export const createUserStripeSchema = z.object({
   user_id: z.number().int(),
   customer_id: z.string(),
   subscription_id: z.string().optional(),
-  subscription_status: z.coerce.boolean().default(false),
+  subscription_status: z.string(),
 });
 
 export const createSessionSchema = z.string();

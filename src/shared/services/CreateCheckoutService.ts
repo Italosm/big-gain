@@ -11,9 +11,11 @@ class CreateCheckoutService {
   public async execute({
     auth0_id,
     price,
+    coupon,
   }: {
     auth0_id: string;
     price: string;
+    coupon: string;
   }): Promise<CheckoutResponse | undefined> {
     const userExists = await prismaService.user.findUnique({
       where: { auth0_id },
@@ -30,7 +32,7 @@ class CreateCheckoutService {
     const email = userExists.email;
     const name = userExists.document;
 
-    const checkout = await generateCheckout(name, email, price);
+    const checkout = await generateCheckout(name, email, price, coupon);
 
     return checkout;
   }

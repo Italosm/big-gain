@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import CancelPlanService from '@/shared/services/CancelPlanService';
 import CheckoutSessionService from '@/shared/services/CheckoutSessionService';
 import CreateCheckoutService from '@/shared/services/CreateCheckoutService';
@@ -7,6 +8,8 @@ import { stripe } from '@/shared/utils/stripe';
 import { Request, Response } from 'express';
 import { auth0IdSchema } from '../schemas/schemas';
 import UpcomingInvoiceService from '@/shared/services/UpcomingInvoiceService';
+import CreatedInvoiceService from '@/shared/services/CreatedInvoiceService';
+import InvoicePaymentFailedService from '@/shared/services/InvoicePaymentFailedService';
 
 class CheckoutController {
   public async show(request: Request, response: Response): Promise<Response> {
@@ -15,10 +18,14 @@ class CheckoutController {
     const price = request.query.price
       ? (request.query.price as string)
       : undefined;
+    const coupon = request.query.coupon
+      ? (request.query.coupon as string)
+      : undefined;
     const checkoutUser = new CreateCheckoutService();
     const url = await checkoutUser.execute({
       auth0_id,
       price,
+      coupon,
     });
     return response.json(url);
   }
@@ -56,6 +63,8 @@ class CheckoutController {
     const subscriptionService = new SubscriptionService();
     const cancelPlan = new CancelPlanService();
     const upcomingInvoice = new UpcomingInvoiceService();
+    const createdInvoice = new CreatedInvoiceService();
+    const paymentFailed = new InvoicePaymentFailedService();
     switch (event.type) {
       case 'checkout.session.completed':
         await checkoutSession.execute(event);
@@ -66,6 +75,12 @@ class CheckoutController {
         break;
       case 'invoice.upcoming':
         await upcomingInvoice.execute(event.data.object);
+        break;
+      case 'invoice.created':
+        await createdInvoice.execute(event.data.object);
+        break;
+      case 'invoice.payment_failed':
+        await paymentFailed.execute(event);
         break;
       case 'customer.subscription.deleted':
         await cancelPlan.execute(event);
