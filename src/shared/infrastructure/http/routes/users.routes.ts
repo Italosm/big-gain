@@ -127,7 +127,7 @@ usersRoutes.post('/', async (req, res) => {
 
   if (data.email) {
     const emailExists = await prismaService.user.findUnique({
-      where: { document: data.email },
+      where: { email: data.email },
     });
 
     if (emailExists) {
