@@ -98,8 +98,35 @@ model User {
   session              Session[]
   RecordSession        RecordSession[]
   PinnacleSubscription PinnacleSubscription?
+  TelegramToken        TelegramToken?
+  UserTelegram         UserTelegram?
 
   @@map("users")
+}
+
+model TelegramToken {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      @unique
+  user       User     @relation(fields: [user_id], references: [id])
+  token      String
+  created_at DateTime @default(now())
+  expired_in DateTime
+  updated_at DateTime @updatedAt
+
+  @@map("telegram_tokens")
+}
+
+model UserTelegram {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      @unique
+  user       User     @relation(fields: [user_id], references: [id])
+  chat_id    String   @unique
+  status     Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([status])
+  @@map("user_telegrams")
 }
 
 model PinnacleSubscription {

@@ -51,6 +51,7 @@
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
     "stripe": "^16.7.0",
+    "telegraf": "^4.16.3",
     "zod": "^3.23.8"
   }
 }

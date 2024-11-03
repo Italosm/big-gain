@@ -5,6 +5,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   STRIPE_SECRET: z.string(),
   STRIPE_ID_WEBHOOK: z.string(),
+  TELEGRAM_BOT_TOKEN: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

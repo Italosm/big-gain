@@ -155,7 +155,39 @@ usersRoutes.post('/', async (req, res) => {
       customer_id: customer.id,
     },
   });
-  return res.json(user);
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date();
+  expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+  await prismaService.telegramToken.create({
+    data: {
+      user_id: user.id,
+      token: code,
+      expired_in: expiresAt,
+    },
+  });
+  return res.json({ user, code });
+});
+
+usersRoutes.get('/code/:auth0_id', async (req, res) => {
+  const { auth0_id } = req.params;
+  auth0IdSchema.parse(auth0_id);
+  const userExists = await prismaService.user.findUnique({
+    where: { auth0_id },
+  });
+  if (!userExists) {
+    throw new NotFoundError('User not found');
+  }
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date();
+  expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+  await prismaService.telegramToken.update({
+    where: { user_id: userExists.id },
+    data: {
+      token: code,
+      expired_in: expiresAt,
+    },
+  });
+  return res.json({ code });
 });
 
 usersRoutes.post('/pinnacle/:auth0_id', async (req, res) => {
