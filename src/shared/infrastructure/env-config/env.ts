@@ -6,6 +6,7 @@ const envSchema = z.object({
   STRIPE_SECRET: z.string(),
   STRIPE_ID_WEBHOOK: z.string(),
   TELEGRAM_BOT_TOKEN: z.string(),
+  APP_URL: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

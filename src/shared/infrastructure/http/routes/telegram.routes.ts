@@ -6,7 +6,7 @@ import { prismaService } from '../../database/prisma/prisma.service';
 
 export function initializeBot() {
   const PORT = env.PORT;
-  const URL = process.env.APP_URL;
+  const URL = env.APP_URL;
   const token = env.TELEGRAM_BOT_TOKEN;
   const bot = new Telegraf<Context>(token);
 
