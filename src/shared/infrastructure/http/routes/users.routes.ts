@@ -142,6 +142,7 @@ usersRoutes.post('/', async (req, res) => {
       document: data.document,
       phones: data.phones,
       nacionalidade_id: data.nacionalidade,
+      pinnacle_refusal: data.pinnacle_refusal,
       avatar: data.avatar,
       birth_date: data.birth_date,
     },
