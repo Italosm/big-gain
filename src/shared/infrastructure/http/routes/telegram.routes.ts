@@ -5,7 +5,7 @@ import { env } from '../../env-config/env';
 import { prismaService } from '../../database/prisma/prisma.service';
 
 export function initializeBot() {
-  const PORT = env.PORT;
+  const BOT_PORT = 8081;
   const URL = env.APP_URL;
   const token = env.TELEGRAM_BOT_TOKEN;
   const bot = new Telegraf<Context>(token);
@@ -101,7 +101,7 @@ export function initializeBot() {
     .launch({
       webhook: {
         domain: URL,
-        port: +PORT,
+        port: +BOT_PORT,
       },
     })
     .then(() => {
