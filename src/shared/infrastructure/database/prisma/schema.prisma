@@ -76,6 +76,17 @@ model RecordSession {
   @@map("record_sessions")
 }
 
+model Countries {
+  id           Int    @id
+  name         String
+  country_code String
+  iso_code     String
+  language     String
+  User         User[]
+
+  @@map("countries")
+}
+
 model User {
   id                   Int                   @id @default(autoincrement())
   auth0_id             String                @unique
@@ -88,6 +99,8 @@ model User {
   avatar               String?               @db.Text
   roles                UserRoles[]           @default([USER])
   birth_date           DateTime?             @db.Date
+  pinnacle_refusal     Boolean?
+  nacionalidade_id     Int?
   created_at           DateTime              @default(now())
   updated_at           DateTime              @updatedAt
   deleted_at           DateTime?             @db.Date
@@ -100,6 +113,7 @@ model User {
   PinnacleSubscription PinnacleSubscription?
   TelegramToken        TelegramToken?
   UserTelegram         UserTelegram?
+  Countrie             Countries?            @relation(fields: [nacionalidade_id], references: [id])
 
   @@map("users")
 }
@@ -120,7 +134,8 @@ model UserTelegram {
   id         Int      @id @default(autoincrement())
   user_id    Int      @unique
   user       User     @relation(fields: [user_id], references: [id])
-  chat_id    String   @unique
+  chat_id    Int      @unique
+  phone      String?  @unique
   status     Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

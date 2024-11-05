@@ -7,6 +7,7 @@ export const createUserSchema = z.object({
   email: z.string().email().optional(),
   document: z.string(),
   phones: z.string(),
+  nacionalidade: z.number().default(26),
   avatar: z.string().url().optional(),
   birth_date: z.coerce.date(),
 });
@@ -40,6 +41,7 @@ export const updateUserSchema = z.object({
   email: z.string().email().optional(),
   document: z.string().optional(),
   phones: z.string().optional(),
+  nacionalidade: z.number().optional(),
   avatar: z.string().url().optional(),
   birth_date: z.coerce.date().optional(),
 });

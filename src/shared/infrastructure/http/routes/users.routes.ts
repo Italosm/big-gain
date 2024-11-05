@@ -141,6 +141,7 @@ usersRoutes.post('/', async (req, res) => {
       email: data.email,
       document: data.document,
       phones: data.phones,
+      nacionalidade_id: data.nacionalidade,
       avatar: data.avatar,
       birth_date: data.birth_date,
     },
