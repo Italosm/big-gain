@@ -181,9 +181,14 @@ usersRoutes.get('/code/:auth0_id', async (req, res) => {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + 10);
-  await prismaService.telegramToken.update({
+  await prismaService.telegramToken.upsert({
     where: { user_id: userExists.id },
-    data: {
+    update: {
+      token: code,
+      expired_in: expiresAt,
+    },
+    create: {
+      user_id: userExists.id,
       token: code,
       expired_in: expiresAt,
     },
