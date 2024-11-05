@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Telegraf, Context, Markup } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { env } from '../../env-config/env';
 import { prismaService } from '../../database/prisma/prisma.service';
@@ -10,7 +10,9 @@ export function initializeBot() {
   const token = env.TELEGRAM_BOT_TOKEN;
   const bot = new Telegraf<Context>(token);
 
-  bot.telegram.setWebhook(`${URL}/bot${token}`);
+  bot.telegram.deleteWebhook().then(() => {
+    bot.telegram.setWebhook(`${URL}/bot${token}`);
+  });
 
   bot.start(ctx => {
     ctx.reply('Por favor, envie o código que você recebeu no aplicativo.');
@@ -51,7 +53,6 @@ export function initializeBot() {
           },
         );
 
-        // Armazena temporariamente o user_id e chatId para futura associação com o telefone
         await prismaService.userTelegram.upsert({
           where: { user_id: tokenEntry.user_id },
           create: {
@@ -73,7 +74,6 @@ export function initializeBot() {
     }
   });
 
-  // Recebe o contato do usuário após ele compartilhar o número
   bot.on(message('contact'), async ctx => {
     const phoneNumber = ctx.message.contact.phone_number;
     const chatId = ctx.chat?.id;
@@ -96,15 +96,16 @@ export function initializeBot() {
     }
   });
 
+  // Iniciar o bot com webhook
   bot
     .launch({
       webhook: {
         domain: URL,
-        port: PORT,
+        port: +PORT,
       },
     })
     .then(() => {
-      console.log('Bot started in polling mode.');
+      console.log(`Bot iniciado com webhook no endereço ${URL}/bot${token}`);
     })
     .catch(error => {
       console.error('Erro ao iniciar o bot:', error.message);
