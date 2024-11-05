@@ -1,12 +1,16 @@
 /* eslint-disable no-console */
-import { Telegraf } from 'telegraf';
+import { Telegraf, Context, Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { env } from '../../env-config/env';
 import { prismaService } from '../../database/prisma/prisma.service';
 
 export function initializeBot() {
+  const PORT = env.PORT;
+  const URL = process.env.APP_URL;
   const token = env.TELEGRAM_BOT_TOKEN;
-  const bot = new Telegraf(token);
+  const bot = new Telegraf<Context>(token);
+
+  bot.telegram.setWebhook(`${URL}/bot${token}`);
 
   bot.start(ctx => {
     ctx.reply('Por favor, envie o código que você recebeu no aplicativo.');
@@ -93,7 +97,12 @@ export function initializeBot() {
   });
 
   bot
-    .launch()
+    .launch({
+      webhook: {
+        domain: URL,
+        port: PORT,
+      },
+    })
     .then(() => {
       console.log('Bot started in polling mode.');
     })
