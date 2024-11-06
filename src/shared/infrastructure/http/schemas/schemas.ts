@@ -8,7 +8,7 @@ export const createUserSchema = z.object({
   document: z.string(),
   phones: z.string(),
   nacionalidade: z.number().default(26),
-  pinnacle_refusal: z.boolean(),
+  pinnacle_refusal: z.boolean().optional(),
   avatar: z.string().url().optional(),
   birth_date: z.coerce.date(),
 });
