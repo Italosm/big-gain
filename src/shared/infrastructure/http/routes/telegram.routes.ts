@@ -81,6 +81,9 @@ export function initializeBot() {
         where: { chat_id: chatId },
         data: { phone: phoneNumber },
       });
+      await ctx.reply(
+        `Agora você pode acessar o grupo através deste link: https://t.me/elitearbsociety`,
+      );
     } catch (error) {
       console.error(
         'Erro ao salvar o contato no banco de dados:',

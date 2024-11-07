@@ -29,6 +29,7 @@ usersRoutes.get('/:auth0_id', async (req, res) => {
     include: {
       PinnacleSubscription: true,
       stripe_subscription: true,
+      UserTelegram: true,
     },
   });
   if (!user) {
@@ -49,6 +50,7 @@ usersRoutes.get('/v2/:pinnacle_id', async (req, res) => {
     include: {
       PinnacleSubscription: true,
       stripe_subscription: true,
+      UserTelegram: true,
     },
   });
   if (!user) {
@@ -90,6 +92,8 @@ usersRoutes.get('/', async (req, res) => {
     },
     include: {
       PinnacleSubscription: true,
+      stripe_subscription: true,
+      UserTelegram: true,
     },
     where: whereClause,
   });
