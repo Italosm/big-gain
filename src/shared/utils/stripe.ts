@@ -51,9 +51,6 @@ export const generateCheckout = async (
           quantity: 1,
         },
       ],
-      subscription_data: {
-        trial_period_days: 1,
-      },
       discounts: discounts,
     });
     return {
