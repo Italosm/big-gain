@@ -94,3 +94,12 @@ export const createUserStripeSchema = z.object({
 export const createSessionSchema = z.string();
 
 export const auth0IdSchema = z.string();
+
+export const createStripeCouponSchema = z.object({
+  percentOff: z.number().optional(),
+  amountOff: z.number().optional(),
+  currency: z.string().optional(),
+  duration: z.enum(['once', 'repeating']).default('once'),
+  durationInMonths: z.number().optional(),
+  name: z.string().optional(),
+});

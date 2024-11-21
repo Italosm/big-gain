@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import Stripe from 'stripe';
 import { env } from '../infrastructure/env-config/env';
+import ApplicationError from '../errors/application-error';
 
 export const stripe = new Stripe(env.STRIPE_SECRET, {
   httpClient: Stripe.createFetchHttpClient(),
@@ -72,8 +73,33 @@ export const handleCancelSubscription = async (idSubscriptions: string) => {
 export const createPortalCustomer = async (idCustomer: string) => {
   const subscription = await stripe.billingPortal.sessions.create({
     customer: idCustomer,
-    return_url: 'https://arbmachine.io/usuario',
+    return_url: 'https://arbmachine.io/painel',
   });
 
   return subscription;
+};
+
+export const createStripeCoupon = async (data: {
+  percentOff?: number; // Percentual de desconto (ex: 20 para 20%)
+  amountOff?: number; // Valor fixo de desconto em centavos (ex: 500 para $5.00)
+  currency?: string; // Necessário se `amountOff` for usado (ex: "usd")
+  duration: 'once' | 'repeating'; // Duração do cupom
+  durationInMonths?: number; // Quantidade de meses se `duration` for "repeating"
+  name?: string; // Nome opcional para o cupom
+}) => {
+  try {
+    const coupon = await stripe.coupons.create({
+      percent_off: data.percentOff,
+      amount_off: data.amountOff,
+      currency: data.currency,
+      duration: data.duration,
+      duration_in_months: data.durationInMonths,
+      name: data.name,
+    });
+
+    return coupon;
+  } catch (error) {
+    console.error('Error creating coupon:', error);
+    throw new ApplicationError('Error generating Coupon');
+  }
 };
