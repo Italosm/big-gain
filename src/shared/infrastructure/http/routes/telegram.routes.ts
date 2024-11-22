@@ -69,9 +69,8 @@ export function initializeBot() {
     }
   });
 
-  bot.on('message', ctx => {
+  bot.on(message('text'), async ctx => {
     console.log('Chat ID:', ctx.chat.id);
-    ctx.reply(`O ID é: ${ctx.chat.id}`);
   });
 
   // Recebe o contato do usuário após ele compartilhar o número
