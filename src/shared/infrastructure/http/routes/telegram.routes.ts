@@ -12,11 +12,6 @@ export function initializeBot() {
     ctx.reply('Por favor, envie o código que você recebeu no aplicativo.');
   });
 
-  bot.on('channel_post', async ctx => {
-    const chatId = ctx.chat?.id;
-    console.log(chatId);
-  });
-
   bot.on(message('text'), async ctx => {
     const code = ctx.message.text;
     const chatId = ctx.chat?.id;
@@ -86,8 +81,17 @@ export function initializeBot() {
         where: { chat_id: chatId },
         data: { phone: phoneNumber },
       });
+
+      const telegramGroupId = env.TELEGRAM_CHANNEL_ID;
+      const inviteLink = await ctx.telegram.createChatInviteLink(
+        telegramGroupId,
+        {
+          expire_date: Math.floor(Date.now() / 1000) + 3600,
+          member_limit: 1,
+        },
+      );
       await ctx.reply(
-        `Agora você pode acessar o grupo através deste link: https://t.me/elitearbsociety`,
+        `Agora você pode acessar o grupo através deste link: ${inviteLink.invite_link}`,
       );
     } catch (error) {
       console.error(
