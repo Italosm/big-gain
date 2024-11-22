@@ -12,10 +12,14 @@ export function initializeBot() {
     ctx.reply('Por favor, envie o código que você recebeu no aplicativo.');
   });
 
+  bot.on('channel_post', async ctx => {
+    const chatId = ctx.chat?.id;
+    console.log(chatId);
+  });
+
   bot.on(message('text'), async ctx => {
     const code = ctx.message.text;
     const chatId = ctx.chat?.id;
-    console.log(chatId);
 
     try {
       const tokenEntry = await prismaService.telegramToken.findFirst({
