@@ -69,6 +69,11 @@ export function initializeBot() {
     }
   });
 
+  bot.on('message', ctx => {
+    console.log('Chat ID:', ctx.chat.id);
+    ctx.reply(`O ID é: ${ctx.chat.id}`);
+  });
+
   // Recebe o contato do usuário após ele compartilhar o número
   bot.on(message('contact'), async ctx => {
     const phoneNumber = ctx.message.contact.phone_number;
