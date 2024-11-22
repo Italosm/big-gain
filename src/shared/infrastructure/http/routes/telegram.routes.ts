@@ -15,6 +15,7 @@ export function initializeBot() {
   bot.on(message('text'), async ctx => {
     const code = ctx.message.text;
     const chatId = ctx.chat?.id;
+    console.log('Chat ID:', chatId);
 
     try {
       const tokenEntry = await prismaService.telegramToken.findFirst({
@@ -67,10 +68,6 @@ export function initializeBot() {
         'Ocorreu um erro ao validar seu código. Tente novamente.',
       );
     }
-  });
-
-  bot.on(message('text'), async ctx => {
-    console.log('Chat ID:', ctx.chat.id);
   });
 
   // Recebe o contato do usuário após ele compartilhar o número
