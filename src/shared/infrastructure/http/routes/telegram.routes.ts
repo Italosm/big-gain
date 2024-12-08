@@ -14,7 +14,7 @@ export function initializeBot() {
 
   bot.on(message('text'), async ctx => {
     const code = ctx.message.text;
-    const chatId = ctx.chat?.id;
+    const chatId = ctx.chat?.id.toString();
 
     try {
       const tokenEntry = await prismaService.telegramToken.findFirst({
