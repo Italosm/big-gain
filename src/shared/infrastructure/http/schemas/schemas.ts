@@ -6,8 +6,8 @@ export const createUserSchema = z.object({
   name: z.string().min(3).optional(),
   email: z.string().email().optional(),
   document: z.string(),
-  phones: z.string(),
-  nacionalidade: z.number().default(26),
+  phones: z.string().optional(),
+  nacionalidade: z.coerce.number().default(26),
   pinnacle_refusal: z.boolean().optional(),
   avatar: z.string().url().optional(),
   birth_date: z.coerce.date(),
@@ -66,10 +66,10 @@ export const updateUserPinnacleSchema = z.object({
 
 export const createUserAddressSchema = z.object({
   address: z.string(),
-  cep: z.string(),
+  cep: z.string().optional(),
   complement: z.string().optional(),
-  neighborhood: z.string(),
-  number: z.string(),
+  neighborhood: z.string().optional(),
+  number: z.string().optional(),
   city: z.string(),
   state: z.string(),
 });

@@ -92,7 +92,7 @@ model User {
   auth0_id             String                @unique
   name                 String                @db.Text
   email                String?               @unique @db.Text
-  document             String?               @unique @db.VarChar(14)
+  document             String                @unique
   phones               String?               @db.Text
   status               Boolean               @default(false)
   password             String?               @db.Text
@@ -178,10 +178,10 @@ model UserAddress {
   id           Int      @id @default(autoincrement())
   user_id      Int
   address      String   @db.Text
-  cep          String   @db.Text
+  cep          String?  @db.Text
   complement   String?  @db.Text
-  neighborhood String   @db.Text
-  number       String   @db.Text
+  neighborhood String?  @db.Text
+  number       String?  @db.Text
   city         String   @db.Text
   state        String   @db.Text
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)

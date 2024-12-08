@@ -86,7 +86,7 @@ export function initializeBot() {
       const inviteLink = await ctx.telegram.createChatInviteLink(
         telegramGroupId,
         {
-          expire_date: Math.floor(Date.now() / 1000) + 3600,
+          expire_date: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60,
           member_limit: 1,
         },
       );
