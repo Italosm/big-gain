@@ -163,7 +163,7 @@ usersRoutes.post('/', async (req, res) => {
   });
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = new Date();
-  expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+  expiresAt.setFullYear(expiresAt.getFullYear() + 1);
   await prismaService.telegramToken.create({
     data: {
       user_id: user.id,
@@ -185,7 +185,7 @@ usersRoutes.get('/code/:auth0_id', async (req, res) => {
   }
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = new Date();
-  expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+  expiresAt.setFullYear(expiresAt.getFullYear() + 1);
   await prismaService.telegramToken.upsert({
     where: { user_id: userExists.id },
     update: {
