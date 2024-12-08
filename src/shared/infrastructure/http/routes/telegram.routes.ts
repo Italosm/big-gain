@@ -72,7 +72,7 @@ export function initializeBot() {
   // Recebe o contato do usuário após ele compartilhar o número
   bot.on(message('contact'), async ctx => {
     const phoneNumber = ctx.message.contact.phone_number;
-    const chatId = ctx.chat?.id;
+    const chatId = ctx.chat?.id.toString();
 
     await ctx.reply('Obrigado por compartilhar seu número!');
 
