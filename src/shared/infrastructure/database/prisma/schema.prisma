@@ -134,7 +134,7 @@ model UserTelegram {
   id         Int      @id @default(autoincrement())
   user_id    Int      @unique
   user       User     @relation(fields: [user_id], references: [id])
-  chat_id    BigInt   @unique
+  chat_id    String   @unique
   phone      String?  @unique
   status     Boolean  @default(true)
   created_at DateTime @default(now())
