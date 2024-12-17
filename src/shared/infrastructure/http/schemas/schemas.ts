@@ -7,7 +7,7 @@ export const createUserSchema = z.object({
   email: z.string().email().optional(),
   document: z.string(),
   phones: z.string().optional(),
-  nacionalidade: z.coerce.number().default(26),
+  nacionalidade: z.coerce.number(),
   pinnacle_refusal: z.boolean().optional(),
   avatar: z.string().url().optional(),
   birth_date: z.coerce.date(),
@@ -70,8 +70,8 @@ export const createUserAddressSchema = z.object({
   complement: z.string().optional(),
   neighborhood: z.string().optional(),
   number: z.string().optional(),
-  city: z.string(),
-  state: z.string(),
+  city: z.string().optional(),
+  state: z.string().optional(),
 });
 
 export const updateUserAddressSchema = z.object({
