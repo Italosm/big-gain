@@ -37,13 +37,23 @@ export const listUsersSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
-  status: z.coerce.boolean().optional(),
+  status: z
+    .string()
+    .transform(val =>
+      val === 'true' || val === 'false' ? val === 'true' : undefined,
+    )
+    .optional(),
   name: z.string().min(3).optional(),
   email: z.string().email().optional(),
   document: z.string().optional(),
   phones: z.string().optional(),
   nacionalidade: z.number().optional(),
-  pinnacle_refusal: z.boolean().optional(),
+  pinnacle_refusal: z
+    .string()
+    .transform(val =>
+      val === 'true' || val === 'false' ? val === 'true' : undefined,
+    )
+    .optional(),
   avatar: z.string().url().optional(),
   birth_date: z.coerce.date().optional(),
 });
